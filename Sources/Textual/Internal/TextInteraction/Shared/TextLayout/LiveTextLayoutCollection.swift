@@ -158,7 +158,14 @@
     }
 
     private func makeRunSlices() -> [any TextRunSlice] {
-      zip(base, base.characterRanges).map { slice, characterRange in
+      let ranges = base.characterRanges
+      guard !ranges.isEmpty else {
+        // ctRun introspection failed (e.g. index mismatch on multi-byte Unicode).
+        // Return a single placeholder slice covering the run's bounds so callers
+        // never encounter an empty slices array, which would cause an index crash.
+        return [EmptyRunSlice(typographicBounds: typographicBounds, characterRange: offset..<offset)]
+      }
+      return zip(base, ranges).map { slice, characterRange in
         LiveTextRunSlice(
           base: slice,
           characterRange: characterRange.offset(by: offset)
