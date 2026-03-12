@@ -106,6 +106,11 @@
       guard let ctRuns = CTLineGetGlyphRuns(ctLine) as? [CTRun] else {
         return nil
       }
+      // Guard against index mismatch: SwiftUI's internal run index can exceed the
+      // CT run count for strings containing multi-byte Unicode characters (e.g.
+      // curly quotes, combining marks) where CoreText splits runs differently than
+      // SwiftUI's Text.Layout.Run abstraction.
+      guard index < ctRuns.count else { return nil }
       return ctRuns[index]
     }
   }
