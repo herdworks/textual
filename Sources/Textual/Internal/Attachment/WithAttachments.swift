@@ -53,7 +53,11 @@ extension WithAttachments {
       emojiAttachmentLoader: any AttachmentLoader,
       environment: ColorEnvironmentValues
     ) async {
-      guard attributedString.containsValues(for: [\.imageURL, \.textual.emojiURL]) else {
+      guard
+        attributedString.runs.contains(where: { run in
+          run.imageURL != nil || run.textual.emojiURL != nil
+        })
+      else {
         return
       }
 
