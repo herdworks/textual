@@ -21,11 +21,15 @@ extension AttributedStringProtocol {
   }
 
   func containsValues<T>(for keyPaths: Set<KeyPath<AttributeContainer, T?>>) -> Bool {
-    runs.contains { run in
-      keyPaths.first { keyPath in
-        run.attributes[keyPath: keyPath] != nil
-      } != nil
+    for run in runs {
+      for keyPath in keyPaths {
+        if run.attributes[keyPath: keyPath] != nil {
+          return true
+        }
+      }
     }
+
+    return false
   }
 
   func uniqueValues<T: Hashable>(for keyPath: KeyPath<AttributeContainer, T?>) -> Set<T> {
